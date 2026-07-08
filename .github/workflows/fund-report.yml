@@ -1,0 +1,44 @@
+name: 基金日报
+
+on:
+  schedule:
+    # 北京时间 10:00 = UTC 02:00
+    - cron: '0 2 * * 1-5'
+    # 北京时间 12:00 = UTC 04:00
+    - cron: '0 4 * * 1-5'
+    # 北京时间 14:30 = UTC 06:30
+    - cron: '30 6 * * 1-5'
+    # 北京时间 16:00 = UTC 08:00
+    - cron: '0 8 * * 1-5'
+  # 支持手动触发（方便测试）
+  workflow_dispatch:
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+
+      - name: 运行基金日报
+        env:
+          SMTP_AUTH_CODE: ${{ secrets.SMTP_AUTH_CODE }}
+        run: python fund_report.py
+
+      - name: 上传报告（用于调试）
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fund-report-${{ github.run_id }}-${{ github.run_attempt }}
+          path: fund_report.html
+          retention-days: 3
