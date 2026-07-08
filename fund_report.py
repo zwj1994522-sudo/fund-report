@@ -457,7 +457,7 @@ def send_email(html_body, ts):
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
-    msg["From"] = f"基估宝日报 <{SMTP_USER}>"
+    msg["From"] = SMTP_USER
     msg["To"] = RECIPIENT
 
     # 纯文本备选
