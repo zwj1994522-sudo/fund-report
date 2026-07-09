@@ -1,11 +1,13 @@
 name: 基金日报
 on:
+  schedule:
+    - cron: '5 2,4,6,8 * * 1-5'
   push:
     branches: [trigger-report]
   workflow_dispatch:
-
 jobs:
   report:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -16,7 +18,7 @@ jobs:
       - run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq fonts-noto-cjk 2>/dev/null || true
           pip install -r requirements.txt
-      - name: run
+      - name: report
         env:
           SMTP_AUTH_CODE: ${{ secrets.SMTP_AUTH_CODE }}
         run: python fund_report.py
@@ -26,3 +28,17 @@ jobs:
           name: report-${{ github.run_id }}
           path: fund_report.html
           retention-days: 3
+  cron:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: trigger
+        env:
+          TOKEN: ${{ secrets.GH_PUSH_TOKEN }}
+        run: python cron_trigger.py
