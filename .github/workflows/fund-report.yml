@@ -2,7 +2,7 @@ name: 基金日报
 
 on:
   schedule:
-    # 北京时间 10:00 ± 几分钟 = UTC 02:03 (避开整点高峰)
+    # 北京时间 10:00 = UTC 02:03
     - cron: '3 2 * * 1-5'
     # 北京时间 12:00 = UTC 04:07
     - cron: '7 4 * * 1-5'
@@ -10,9 +10,8 @@ on:
     - cron: '33 6 * * 1-5'
     # 北京时间 16:00 = UTC 08:11
     - cron: '11 8 * * 1-5'
-    # 临时验证 10:36 CST = UTC 02:36
-    - cron: '36 2 * * *'
-  # 支持手动触发（方便测试）
+    # temp: 02:43 UTC
+    - cron: '43 2 * * *'
   workflow_dispatch:
 
 jobs:
@@ -39,7 +38,7 @@ jobs:
           SMTP_AUTH_CODE: ${{ secrets.SMTP_AUTH_CODE }}
         run: python fund_report.py
 
-      - name: 上传报告（用于调试）
+      - name: 上传报告
         if: always()
         uses: actions/upload-artifact@v4
         with:
