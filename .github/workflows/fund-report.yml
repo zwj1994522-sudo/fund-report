@@ -10,8 +10,8 @@ on:
     - cron: '33 6 * * 1-5'
     # 北京时间 16:00 = UTC 08:11
     - cron: '11 8 * * 1-5'
-    # temp: 02:43 UTC
-    - cron: '43 2 * * *'
+    # temp: 03:02 UTC
+    - cron: '2 3 * * *'
   workflow_dispatch:
 
 jobs:
